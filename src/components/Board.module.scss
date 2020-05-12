@@ -1,0 +1,47 @@
+@import "../variables";
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(13rem, 1fr));
+  grid-template-rows: repeat(3, minmax(13rem, 1fr));
+  gap: 2rem;
+}
+
+.buttonYellow,
+.buttonRed,
+.buttonBlue,
+.buttonGreen {
+  border-radius: 50%;
+}
+
+.buttonYellow {
+  background-color: $color-yellow;
+  grid-column: 2/3;
+  grid-row: 3/4;
+}
+.buttonYellowLit {
+  background-color: $color-yellow-2;
+}
+.buttonRed {
+  background-color: $color-red;
+  grid-column: 2/3;
+  grid-row: 1/2;
+}
+.buttonRedLit {
+  background-color: $color-red-2;
+}
+.buttonBlue {
+  background-color: $color-blue;
+  grid-column: 3/4;
+  grid-row: 2/3;
+}
+.buttonBlueLit {
+  background-color: $color-blue-2;
+}
+.buttonGreen {
+  background-color: $color-green;
+  grid-column: 1/2;
+  grid-row: 2/3;
+}
+.buttonGreenLit {
+  background-color: $color-green-2;
+}

@@ -1,0 +1,63 @@
+@import "../variables";
+.container {
+  grid-column: 2/3;
+  grid-row: 2/3;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+.counter {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  font-size: 1.8rem;
+}
+.countTag {
+  text-transform: uppercase;
+}
+.countNum {
+}
+.buttons {
+  display: flex;
+  justify-content: space-around;
+}
+.btnSet {
+  display: flex;
+  flex-direction: column;
+  text-transform: uppercase;
+  justify-content: space-between;
+  align-items: center;
+  width: 33.3333%;
+}
+
+.btnTag {
+  margin-bottom: 0.5rem;
+}
+.startBtn,
+.strictBtn,
+.onOffBtn {
+  display: block;
+  height: 1.8rem;
+  width: 1.8rem;
+  border-radius: 50%;
+}
+
+.startBtn {
+  background-color: $color-red-2;
+}
+.strictBtn {
+  background-color: $color-blue-2;
+}
+.onOffBtn {
+  background-color: $color-green-2;
+}
+.startBtnLit {
+  background-color: $color-red-3;
+}
+.strictBtnLit {
+  background-color: $color-blue-3;
+}
+.onOffBtnLit {
+  background-color: $color-green-3;
+}
