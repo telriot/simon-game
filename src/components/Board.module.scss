@@ -1,9 +1,30 @@
 @import "../variables";
 .grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(13rem, 1fr));
-  grid-template-rows: repeat(3, minmax(13rem, 1fr));
+  grid-template-columns: repeat(3, 13rem);
+  grid-template-rows: repeat(3, 13rem);
   gap: 2rem;
+  @media (max-width: 45em) {
+    grid-template-columns: repeat(3, 11rem);
+    grid-template-rows: repeat(3, 11rem);
+  }
+  @media (max-width: 40em) {
+    grid-template-columns: repeat(3, 10rem);
+    grid-template-rows: repeat(3, 10rem);
+  }
+  @media (max-width: 35em) {
+    grid-template-columns: repeat(3, 9rem);
+    grid-template-rows: repeat(3, 9rem);
+    gap: 1rem;
+  }
+  @media (max-width: 30em) {
+    grid-template-columns: repeat(3, 6.5rem);
+    grid-template-rows: repeat(3, 6.5rem);
+  }
+  @media (max-width: 25em) {
+    grid-template-columns: repeat(3, 5.5rem);
+    grid-template-rows: repeat(3, 5.5rem);
+  }
 }
 
 .buttonYellow,
@@ -11,8 +32,15 @@
 .buttonBlue,
 .buttonGreen {
   border-radius: 50%;
+  transition: all 0.3s;
 }
 
+.buttonYellowLit,
+.buttonRedLit,
+.buttonBlueLit,
+.buttonGreenLit {
+  transform: scale(1.02);
+}
 .buttonYellow {
   background-color: $color-yellow;
   grid-column: 2/3;
@@ -20,6 +48,10 @@
 }
 .buttonYellowLit {
   background-color: $color-yellow-2;
+  box-shadow: 0rem 0rem 4rem rgba($color-yellow-2, 0.9);
+}
+.buttonYellowOff {
+  background-color: $color-yellow-off;
 }
 .buttonRed {
   background-color: $color-red;
@@ -28,6 +60,10 @@
 }
 .buttonRedLit {
   background-color: $color-red-2;
+  box-shadow: 0rem 0rem 4rem rgba($color-red-2, 0.9);
+}
+.buttonRedOff {
+  background-color: $color-red-off;
 }
 .buttonBlue {
   background-color: $color-blue;
@@ -36,6 +72,10 @@
 }
 .buttonBlueLit {
   background-color: $color-blue-2;
+  box-shadow: 0rem 0rem 4rem rgba($color-blue-2, 0.9);
+}
+.buttonBlueOff {
+  background-color: $color-blue-off;
 }
 .buttonGreen {
   background-color: $color-green;
@@ -44,4 +84,8 @@
 }
 .buttonGreenLit {
   background-color: $color-green-2;
+  box-shadow: 0rem 0rem 4rem rgba($color-green-2, 0.9);
+}
+.buttonGreenOff {
+  background-color: $color-green-off;
 }

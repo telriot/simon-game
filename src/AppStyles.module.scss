@@ -1,5 +1,6 @@
 @import "./variables";
 .container {
+  height: 100vh;
   color: $color-white;
   display: flex;
   flex-direction: column;

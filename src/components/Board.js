@@ -1,7 +1,6 @@
-import React, { useRef, useState, useEffect, useContext } from "react"
+import React, { useRef, useEffect, useContext } from "react"
 import boardStyles from "./Board.module.scss"
 import classNames from "classnames/bind"
-
 import Button from "./Button"
 import Controller from "./Controller"
 import sound1 from "../media/simonSound1.mp3"
@@ -9,18 +8,25 @@ import sound2 from "../media/simonSound2.mp3"
 import sound3 from "../media/simonSound3.mp3"
 import sound4 from "../media/simonSound4.mp3"
 import { SimonContext } from "../context"
+import { clearTimeouts } from "../helpers"
 
 let cx = classNames.bind(boardStyles)
 
 function Board() {
-  const { state, dispatch } = useContext(SimonContext)
+  const { state, dispatch, handleSimonsTurn, setPlayersTimeout } = useContext(
+    SimonContext
+  )
   const {
     isActive,
-    interval,
     sequence,
     timeouts,
     isPlayersTurn,
     playersSequence,
+    wincon,
+    isStrict,
+    isRepeating,
+    isOn,
+    hasStarted,
   } = state
   const audio1 = useRef()
   const audio2 = useRef()
@@ -35,92 +41,44 @@ function Board() {
   }, [isActive])
 
   useEffect(() => {
-    let timeouts = []
-    if (sequence.length) {
-      const passToPlayer = setTimeout(
-        () => {
-          dispatch({ type: "SWITCH_TURN" })
-          console.log("timed turn switch")
-        },
-
-        (sequence.length - 1) * interval + 1900
-      )
-      const clearTimeouts = setTimeout(
-        () => dispatch({ type: "CLEAR_TIMEOUTS" }),
-        (sequence.length - 1) * interval + 2000
-      )
-      for (let i = 0; i < sequence.length; i++) {
-        console.log("fire button timeouts", i)
-        const timeoutID = setTimeout(
-          () => dispatch({ type: "CHANGE_BUTTON_STATE", button: sequence[i] }),
-          i * interval + 1500
-        )
-        const resetID = setTimeout(
-          () => dispatch({ type: "RESET_BUTTONS" }),
-          i * interval + 1750
-        )
-        timeouts.push(timeoutID, resetID, passToPlayer)
-        dispatch({ type: "ADD_TIMEOUTS", timeouts })
-        timeouts = []
-      }
-    }
+    sequence.length && handleSimonsTurn()
   }, [sequence])
 
   useEffect(() => {
+    isRepeating && handleSimonsTurn()
+  }, [isRepeating])
+
+  useEffect(() => {
+    clearTimeout(state.playersTimeout)
+    clearTimeouts(timeouts)
     if (isPlayersTurn) {
-      const playersTimeout = setTimeout(() => {
-        if (
-          playersSequence[playersSequence.length] !==
-          sequence[playersSequence.length]
-        ) {
-          console.log("too late")
-          dispatch({ type: "HANDLE_START" })
-        }
-      }, interval)
-      dispatch({ type: "ADD_PLAYERS_TIMEOUT", timeout: playersTimeout })
+      setPlayersTimeout()
     }
   }, [isPlayersTurn])
 
   useEffect(() => {
-    if (playersSequence.length) {
-      console.log(
-        "p-seq use effect fired",
-        playersSequence[playersSequence.length - 1],
-        sequence[playersSequence.length - 1],
-        playersSequence.length,
-        playersSequence
-      )
-      if (
-        playersSequence[playersSequence.length - 1] !==
-        sequence[playersSequence.length - 1]
-      ) {
-        console.log("you lose")
-        dispatch({ type: "HANDLE_START" })
-      }
-      if (
-        playersSequence[playersSequence.length - 1] ===
-        sequence[playersSequence.length - 1]
-      ) {
-        console.log("step cleared")
+    if (hasStarted && playersSequence.length) {
+      let currentIndex = playersSequence.length - 1
+      if (playersSequence[currentIndex] !== sequence[currentIndex]) {
         clearTimeout(state.playersTimeout)
-        dispatch({ type: "CLEAR_PLAYERS_TIMEOUT" })
-        if (playersSequence.length < sequence.length) {
-          console.log("set timeout for next step")
-          const playersTimeout = setTimeout(() => {
-            if (
-              playersSequence[playersSequence.length] !==
-                sequence[playersSequence.length] ||
-              playersSequence.length !== sequence.length
-            ) {
-              dispatch({ type: "HANDLE_START" })
-              console.log("too late")
-            }
-          }, interval)
-          dispatch({ type: "ADD_PLAYERS_TIMEOUT", timeout: playersTimeout })
-        }
-        if (playersSequence.length === sequence.length) {
-          console.log("switching turn", isPlayersTurn)
-          dispatch({ type: "SWITCH_TURN" })
+        clearTimeouts(timeouts)
+        isStrict
+          ? dispatch({ type: "HANDLE_START", message: "YOU LOSE" })
+          : dispatch({ type: "REPEAT" })
+      }
+      if (playersSequence[currentIndex] === sequence[currentIndex]) {
+        clearTimeout(state.playersTimeout)
+        if (playersSequence.length === wincon) {
+          clearTimeouts(timeouts)
+          dispatch({ type: "HANDLE_START", message: "YOU WIN" })
+        } else {
+          dispatch({ type: "CLEAR_PLAYERS_TIMEOUT" })
+          if (playersSequence.length < sequence.length) {
+            setPlayersTimeout()
+          }
+          if (playersSequence.length === sequence.length) {
+            dispatch({ type: "SWITCH_TURN" })
+          }
         }
       }
     }
@@ -129,18 +87,22 @@ function Board() {
   const classRed = cx({
     buttonRed: true,
     buttonRedLit: isActive === 1,
+    buttonRedOff: !isOn,
   })
   const classBlue = cx({
     buttonBlue: true,
     buttonBlueLit: isActive === 2,
+    buttonBlueOff: !isOn,
   })
   const classYellow = cx({
     buttonYellow: true,
     buttonYellowLit: isActive === 3,
+    buttonYellowOff: !isOn,
   })
   const classGreen = cx({
     buttonGreen: true,
     buttonGreenLit: isActive === 4,
+    buttonGreenOff: !isOn,
   })
 
   return (

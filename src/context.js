@@ -2,7 +2,7 @@ import React, { useReducer, createContext } from "react"
 
 const initialState = {
   isOn: false,
-  interval: 1500,
+  interval: 1000,
   sequence: [],
   playersSequence: [],
   isStrict: false,
@@ -11,6 +11,10 @@ const initialState = {
   timeouts: [],
   isPlayersTurn: false,
   playersTimeout: [],
+  wincon: 10,
+  message: "",
+  isRepeating: false,
+  playersTimeoutDuration: 2000,
 }
 
 export const SimonContext = createContext(initialState)
@@ -29,6 +33,9 @@ const SimonContextProvider = (props) => {
     CLEAR_PLAYERS_TIMEOUT: " CLEAR_PLAYERS_TIMEOUT",
     SWITCH_TURN: "SWITCH_TURN",
     ADD_TO_PLAYERS_SEQUENCE: "ADD_TO_PLAYERS_SEQUENCE",
+    SET_MESSAGE: "SET_MESSAGE",
+    CLEAR_MESSAGE: "CLEAR_MESSAGE",
+    REPEAT: "REPEAT",
   }
   const logicReducer = (state, action) => {
     switch (action.type) {
@@ -44,14 +51,21 @@ const SimonContextProvider = (props) => {
         }
       case TYPES.HANDLE_POWER:
         return {
-          ...state,
+          ...initialState,
           isOn: state.isOn ? false : true,
         }
       case TYPES.HANDLE_START:
         return state.hasStarted
-          ? initialState
+          ? {
+              ...initialState,
+              isStrict: state.isStrict,
+              isOn: state.isOn,
+              message: action.message,
+            }
           : {
-              ...state,
+              ...initialState,
+              isStrict: state.isStrict,
+              isOn: state.isOn,
               hasStarted: true,
             }
       case TYPES.HANDLE_STRICT:
@@ -83,10 +97,13 @@ const SimonContextProvider = (props) => {
               ...state,
               isPlayersTurn: false,
               playersSequence: [],
+              message: "",
             }
           : {
               ...state,
               isPlayersTurn: true,
+              isRepeating: false,
+              message: "",
             }
       }
       case TYPES.ADD_TO_PLAYERS_SEQUENCE: {
@@ -107,14 +124,89 @@ const SimonContextProvider = (props) => {
           playersTimeout: null,
         }
       }
+      case TYPES.SET_MESSAGE: {
+        return {
+          ...state,
+          message: action.message,
+        }
+      }
+      case TYPES.CLEAR_MESSAGE: {
+        return {
+          ...state,
+          message: "",
+        }
+      }
+      case TYPES.REPEAT: {
+        return {
+          ...state,
+          isRepeating: true,
+          isPlayersTurn: false,
+          message: "repeating",
+          playersSequence: [],
+        }
+      }
 
       default:
         return state
     }
   }
   const [state, dispatch] = useReducer(logicReducer, initialState)
+
+  const handleSimonsTurn = () => {
+    const { sequence, interval } = state
+    let timeouts = []
+    const delay = 1500
+    //SETUP
+    const passToPlayer = setTimeout(() => {
+      dispatch({ type: "SWITCH_TURN" })
+    }, (sequence.length - 1) * interval + delay + 450)
+    const clearStateTimeouts = setTimeout(
+      () => dispatch({ type: "CLEAR_TIMEOUTS" }),
+      (sequence.length - 1) * interval + delay + 500
+    )
+    //REPRODUCE THE SEQUENCE
+    for (let i = 0; i < sequence.length; i++) {
+      const timeoutID = setTimeout(
+        () => dispatch({ type: "CHANGE_BUTTON_STATE", button: sequence[i] }),
+        i * interval + delay
+      )
+      const resetID = setTimeout(
+        () => dispatch({ type: "RESET_BUTTONS" }),
+        i * interval + delay + 300
+      )
+      //SAVE TIMEOUT IDS IN STATE
+      timeouts.push(timeoutID, resetID, passToPlayer)
+      dispatch({ type: "ADD_TIMEOUTS", timeouts })
+      timeouts = []
+    }
+  }
+
+  const setPlayersTimeout = () => {
+    const {
+      playersSequence,
+      sequence,
+      isStrict,
+      hasStarted,
+      playersTimeoutDuration,
+    } = state
+    const playersTimeout = setTimeout(() => {
+      if (
+        hasStarted &&
+        playersSequence[playersSequence.length] !==
+          sequence[playersSequence.length]
+      ) {
+        isStrict
+          ? dispatch({ type: "HANDLE_START", message: "YOU LOSE" })
+          : dispatch({ type: "REPEAT" })
+      }
+    }, playersTimeoutDuration)
+    dispatch({ type: "ADD_PLAYERS_TIMEOUT", timeout: playersTimeout })
+  }
+
   return (
-    <SimonContext.Provider value={{ state, dispatch }}>
+    <SimonContext.Provider
+      value={{ state, dispatch, handleSimonsTurn, setPlayersTimeout }}
+    >
       {props.children}
     </SimonContext.Provider>
   )

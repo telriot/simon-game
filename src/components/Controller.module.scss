@@ -6,21 +6,79 @@
   display: flex;
   flex-direction: column;
   justify-content: space-around;
+  @media (max-width: 30em) {
+    position: fixed;
+    top: 4vh;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50%;
+    display: flex;
+    align-items: space-around;
+  }
 }
 .counter {
   display: flex;
   justify-content: space-around;
   align-items: center;
+  align-self: center;
+
   font-size: 1.8rem;
+
+  @media (max-width: 45em) {
+    font-size: 1.5rem;
+  }
+  @media (max-width: 40em) {
+    font-size: 1.3rem;
+  }
+  @media (max-width: 35em) {
+    font-size: 1.2rem;
+  }
+  @media (max-width: 30em) {
+    font-size: 1.5rem;
+    margin-bottom: 2.2rem;
+  }
+}
+.counterLit {
+  color: $color-green-3;
 }
 .countTag {
   text-transform: uppercase;
 }
 .countNum {
+  margin-left: 1rem;
 }
+.countNumOff {
+  margin: 0;
+}
+
+.message {
+  position: absolute;
+  align-self: center;
+  justify-self: center;
+  margin-top: -0.7rem;
+  font-size: 1.5rem;
+  text-transform: uppercase;
+  color: $color-green-3;
+  @media (max-width: 45em) {
+    font-size: 1.3rem;
+  }
+  @media (max-width: 40em) {
+    font-size: 1.1rem;
+  }
+  @media (max-width: 35em) {
+    font-size: 1rem;
+  }
+  @media (max-width: 30em) {
+    margin-top: -0.8rem;
+  }
+}
+
 .buttons {
   display: flex;
   justify-content: space-around;
+  @media (max-width: 35em) {
+    justify-content: space-between;
+  }
 }
 .btnSet {
   display: flex;
@@ -33,6 +91,20 @@
 
 .btnTag {
   margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  @media (max-width: 45em) {
+    font-size: 0.75rem;
+  }
+}
+.startTagLit,
+.strictTagLit,
+.onOffTagLit {
+  color: $color-blue-3;
+  text-shadow: 0 0 0.5rem rgba($color-white, 0.4);
+}
+.startTagOff,
+.strictTagOff {
+  color: $color-grey;
 }
 .startBtn,
 .strictBtn,
@@ -44,20 +116,29 @@
 }
 
 .startBtn {
-  background-color: $color-red-2;
+  background-color: $color-yellow-2;
+}
+.startBtnLit {
+  background-color: $color-yellow-3;
+  box-shadow: 0rem 0rem 1rem rgba($color-yellow-2, 0.9);
+}
+.startBtnOff {
+  background-color: $color-yellow-off;
 }
 .strictBtn {
   background-color: $color-blue-2;
 }
-.onOffBtn {
-  background-color: $color-green-2;
-}
-.startBtnLit {
-  background-color: $color-red-3;
-}
 .strictBtnLit {
   background-color: $color-blue-3;
+  box-shadow: 0rem 0rem 1rem rgba($color-blue-2, 0.9);
+}
+.strictBtnOff {
+  background-color: $color-blue-off;
+}
+.onOffBtn {
+  background-color: $color-red-2;
 }
 .onOffBtnLit {
-  background-color: $color-green-3;
+  background-color: $color-green-2;
+  box-shadow: 0rem 0rem 1rem rgba($color-green-2, 0.9);
 }
